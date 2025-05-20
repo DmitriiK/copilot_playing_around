@@ -1,0 +1,10 @@
+body { font-family: sans-serif; background: #f8f8f8; text-align: center; }
+.controls { margin: 20px 0; }
+.bordered-box { border: 2px solid #888; border-radius: 12px; background: #fff; display: inline-block; padding: 18px 24px; margin: 10px 0; }
+.grid { display: grid; gap: 10px; justify-content: center; margin: 20px auto; }
+.grid-btn { font-size: 2rem; width: 60px; height: 60px; border: 2px solid #ccc; border-radius: 10px; background: #fff; cursor: pointer; transition: background 0.2s, box-shadow 0.2s; }
+.grid-btn:active { background: #e0ffe0; }
+.grid-btn.splash { background: #ffdddd !important; box-shadow: 0 0 8px 2px #ff4444; }
+.target-row { display: flex; justify-content: center; gap: 10px; margin-bottom: 20px; }
+.target-btn { font-size: 2rem; width: 60px; height: 60px; border: 2px solid #888; border-radius: 10px; background: #ffe; cursor: default; }
+.timer { font-size: 1.2rem; margin: 10px; }

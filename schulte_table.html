@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Schulte Table Fruit edition</title>
+  <link rel="stylesheet" href="css/schulte_table.css">
+</head>
+<body>
+  <h1>Schulte Table: Fruit Edition</h1>
+  <p style="max-width: 600px; margin: 0 auto 14px; color: #444;">
+    Click the fruit icons in the order shown at the top row. 
+    Each time you click the correct fruit, the order slides left and a new icon appears. 
+    Adjust the grid size, start the timer, and try to finish as fast as you can!
+  </p>
+  <div class="controls">
+    <label for="grid-size">Grid size:</label>
+    <select id="grid-size">
+      <option value="4">4 x 4</option>
+      <option value="5">5 x 5</option>
+      <option value="6">6 x 6</option>
+    </select>
+    <button id="play-btn">Play</button>
+    <button id="stop-btn" disabled>Stop</button>
+    <span class="timer" id="timer">00:00</span>
+  </div>
+  <div class="bordered-box">
+    <div style="font-weight:bold; margin-bottom:6px;">Ordered items</div>
+    <div class="target-row" id="target-row"></div>
+  </div>
+  <div class="bordered-box">
+    <div class="grid" id="game-grid"></div>
+  </div>
+  <script>
+    const EMOJIS = [
+      '🍎','🍌','🍇','🍉','🍓','🍒','🍑','🍍','🥝','🍅','🍆','🥑','🥕','🌽','🥦','🥔','🍋','🍊','🍐','🍏','🥭','🍈','🍤','🍠','🥬','🫛','🫑','🧄','🧅','🥒','🍄','🥜','🌰','🍞','🥨','🧀','🥚','🥓','🥩','🍗','🍖','🌭','🍔','🍟','🍕','🥪','🥙','🌮','🌯','🥗','🍲','🍛','🍜','🍝','🍣','🍱','🥟','🍤','🍚','🍘','🍥','🥠','🍢','🍡','🍧','🍨','🍦','🥧','🍰','🎂','🧁','🍮','🍭','🍬','🍫','🍿','🍩','🍪'
+    ];
+    let gridSize = 4;
+    let order = [];
+    let gridIcons = [];
+    let windowSize = 3;
+    let windowStart = 0;
+    let playing = false;
+    let timer = 0;
+    let timerInterval = null;
+
+    const gridSizeSelect = document.getElementById('grid-size');
+    const playBtn = document.getElementById('play-btn');
+    const stopBtn = document.getElementById('stop-btn');
+    const timerEl = document.getElementById('timer');
+    const targetRow = document.getElementById('target-row');
+    const gameGrid = document.getElementById('game-grid');
+
+    function shuffle(arr) {
+      for (let i = arr.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [arr[i], arr[j]] = [arr[j], arr[i]];
+      }
+      return arr;
+    }
+
+    function startGame() {
+      gridSize = parseInt(gridSizeSelect.value);
+      const total = gridSize * gridSize;
+      gridIcons = shuffle(EMOJIS.slice()).slice(0, total);
+      order = shuffle(gridIcons.slice());
+      windowSize = gridSize;
+      windowStart = 0;
+      playing = true;
+      timer = 0;
+      updateTimer();
+      playBtn.disabled = true;
+      stopBtn.disabled = false;
+      gridSizeSelect.disabled = true;
+      renderTargetRow();
+      renderGrid();
+      timerInterval = setInterval(() => {
+        timer++;
+        updateTimer();
+      }, 1000);
+    }
+
+    function stopGame() {
+      playing = false;
+      playBtn.disabled = false;
+      stopBtn.disabled = true;
+      gridSizeSelect.disabled = false;
+      clearInterval(timerInterval);
+    }
+
+    function updateTimer() {
+      const min = String(Math.floor(timer / 60)).padStart(2, '0');
+      const sec = String(timer % 60).padStart(2, '0');
+      timerEl.textContent = `${min}:${sec}`;
+    }
+
+    function renderTargetRow() {
+      targetRow.innerHTML = '';
+      for (let i = 0; i < windowSize; i++) {
+        const idx = windowStart + i;
+        if (idx < order.length) {
+          const btn = document.createElement('button');
+          btn.className = 'target-btn';
+          btn.textContent = order[idx];
+          targetRow.appendChild(btn);
+        }
+      }
+    }
+
+    function renderGrid() {
+      gameGrid.innerHTML = '';
+      gameGrid.style.gridTemplateColumns = `repeat(${gridSize}, 60px)`;
+      gridIcons.forEach(icon => {
+        const btn = document.createElement('button');
+        btn.className = 'grid-btn';
+        btn.textContent = icon;
+        btn.disabled = !playing;
+        btn.onclick = () => handleGridClick(icon, btn);
+        gameGrid.appendChild(btn);
+      });
+    }
+
+    function handleGridClick(icon, btn) {
+      if (!playing) return;
+      if (icon === order[windowStart]) {
+        btn.disabled = true;
+        btn.style.background = '#d0ffd0';
+        windowStart++;
+        renderTargetRow();
+        if (windowStart + windowSize - 1 >= order.length) {
+          // Game finished
+          stopGame();
+          setTimeout(() => alert(`Congratulations! Time: ${timerEl.textContent}`), 100);
+        }
+      } else {
+        btn.classList.add('splash');
+        setTimeout(() => btn.classList.remove('splash'), 350);
+      }
+    }
+
+    playBtn.onclick = startGame;
+    stopBtn.onclick = stopGame;
+    gridSizeSelect.onchange = () => {
+      gridSize = parseInt(gridSizeSelect.value);
+      const total = gridSize * gridSize;
+      gridIcons = shuffle(EMOJIS.slice()).slice(0, total);
+      order = shuffle(gridIcons.slice());
+      windowSize = gridSize;
+      windowStart = 0;
+      renderGrid();
+      renderTargetRow();
+    };
+    // Initial render
+    (function initialPopulate() {
+      gridSize = parseInt(gridSizeSelect.value);
+      const total = gridSize * gridSize;
+      gridIcons = shuffle(EMOJIS.slice()).slice(0, total);
+      order = shuffle(gridIcons.slice());
+      windowSize = gridSize;
+      windowStart = 0;
+      renderGrid();
+      renderTargetRow();
+    })();
+  </script>
+</body>
+</html>

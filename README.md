@@ -1,6 +1,8 @@
 # Schulte Table, Emoji Edition
 
 This is a Schulte Table game with emoji icons instead of numbers. The game is designed to be fun and engaging, with a focus on improving visual attention and quick decision-making.
+You can play the game online at the following URL:
+[Schulte Table, Emoji Edition](https://dmitriik.github.io/copilot_playing_around/schulte_table.html)
 
 ## Gameplay Summary
 - The game consists of a square grid of buttons (the main grid) filled with emoji icons from a selected category (e.g., animals, food, or sports).
@@ -21,3 +23,5 @@ This is a Schulte Table game with emoji icons instead of numbers. The game is de
 
 ## Credits
 This game was created with the help of GitHub Copilot, showcasing the power of AI-assisted coding.
+
+

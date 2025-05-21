@@ -3,17 +3,23 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Schulte Table Fruit edition</title>
+  <title>Schulte Table</title>
   <link rel="stylesheet" href="css/schulte_table.css">
 </head>
 <body>
-  <h1>Schulte Table: Fruit Edition</h1>
-  <p style="max-width: 600px; margin: 0 auto 14px; color: #444;">
-    Click the fruit icons in the order shown at the top row. 
-    Each time you click the correct fruit, the order slides left and a new icon appears. 
-    Adjust the grid size, start the timer, and try to finish as fast as you can!
+  <h1>Schulte Table, emoji edition</h1>
+  <p style="max-width: 600px; margin: 0 0 10px 0; color: #444; text-align: left;"></p>
+    This is a Schulte Table game with emoji icons instead of numbers. 
+    Choose a category and grid size, then click Play. 
+    The main grid is filled with icons, and the order to click  is shown in "Ordered items".
+   Try to finish as fast as you can!
   </p>
   <div class="controls">
+    <label for="category">Category:</label>
+    <select id="category">
+      <option value="food">Food</option>
+      <option value="animal">Animal</option>
+    </select>
     <label for="grid-size">Grid size:</label>
     <select id="grid-size">
       <option value="4">4 x 4</option>
@@ -34,18 +40,23 @@
     </div>
   </div>
   <script>
-    const EMOJIS = [
+    const FOOD_EMOJIS = [
       '🍎','🍌','🍇','🍉','🍓','🍒','🍑','🍍','🥝','🍅','🍆','🥑','🥕','🌽','🥦','🥔','🍋','🍊','🍐','🍏','🥭','🍈','🍤','🍠','🥬','🫛','🫑','🧄','🧅','🥒','🍄','🥜','🌰','🍞','🥨','🧀','🥚','🥓','🥩','🍗','🍖','🌭','🍔','🍟','🍕','🥪','🥙','🌮','🌯','🥗','🍲','🍛','🍜','🍝','🍣','🍱','🥟','🍤','🍚','🍘','🍥','🥠','🍢','🍡','🍧','🍨','🍦','🥧','🍰','🎂','🧁','🍮','🍭','🍬','🍫','🍿','🍩','🍪'
+    ];
+    const ANIMAL_EMOJIS = [
+      '🐶','🐱','🐭','🐹','🐰','🦊','🐻','🐼','🐨','🐯','🦁','🐮','🐷','🐸','🐵','🐔','🐧','🐦','🐤','🦆','🦅','🦉','🦇','🐺','🐗','🐴','🦄','🐝','🐛','🦋','🐌','🐞','🐜','🪲','🪳','🦟','🦗','🕷','🦂','🐢','🐍','🦎','🦖','🦕','🐙','🦑','🦐','🦞','🦀','🐡','🐠','🐟','🐬','🐳','🐋','🦈','🐊','🐅','🐆','🦓','🦍','🦧','🐘','🦣','🦛','🦏','🐪','🐫','🦒','🦘','🦬','🐃','🐂','🐄','🐎','🐖','🐏','🐑','🦙','🐐','🦌','🐕','🐩','🦮','🐕‍🦺','🐈','🐈‍⬛','🪶','🐓','🦃','🦤','🦚','🦜','🦢','🦩','🕊','🐇','🦝','🦨','🦡','🦫','🦦','🦥','🐁','🐀','🐿','🦔'
     ];
     let gridSize = 4;
     let order = [];
     let gridIcons = [];
-    let windowSize = 3;
+    let windowSize = 4;
     let windowStart = 0;
     let playing = false;
     let timer = 0;
     let timerInterval = null;
+    let currentEmojis = FOOD_EMOJIS;
 
+    const categorySelect = document.getElementById('category');
     const gridSizeSelect = document.getElementById('grid-size');
     const playBtn = document.getElementById('play-btn');
     const stopBtn = document.getElementById('stop-btn');
@@ -63,10 +74,11 @@
 
     function startGame() {
       gridSize = parseInt(gridSizeSelect.value);
-      const total = gridSize * gridSize;
-      gridIcons = shuffle(EMOJIS.slice()).slice(0, total);
-      order = shuffle(gridIcons.slice());
       windowSize = gridSize;
+      const total = gridSize * gridSize;
+      currentEmojis = categorySelect.value === 'animal' ? ANIMAL_EMOJIS : FOOD_EMOJIS;
+      gridIcons = shuffle(currentEmojis.slice()).slice(0, total);
+      order = shuffle(gridIcons.slice());
       windowStart = 0;
       playing = true;
       timer = 0;
@@ -74,6 +86,7 @@
       playBtn.disabled = true;
       stopBtn.disabled = false;
       gridSizeSelect.disabled = true;
+      categorySelect.disabled = true;
       renderTargetRow();
       renderGrid();
       timerInterval = setInterval(() => {
@@ -87,6 +100,7 @@
       playBtn.disabled = false;
       stopBtn.disabled = true;
       gridSizeSelect.disabled = false;
+      categorySelect.disabled = false;
       clearInterval(timerInterval);
     }
 
@@ -98,6 +112,17 @@
 
     function renderTargetRow() {
       targetRow.innerHTML = '';
+      if (!playing) {
+        // Show empty buttons before game starts
+        for (let i = 0; i < windowSize; i++) {
+          const btn = document.createElement('button');
+          btn.className = 'target-btn';
+          btn.textContent = '';
+          btn.disabled = true;
+          targetRow.appendChild(btn);
+        }
+        return;
+      }
       for (let i = 0; i < windowSize; i++) {
         const idx = windowStart + i;
         if (idx < order.length) {
@@ -129,8 +154,8 @@
         btn.style.background = '#d0ffd0';
         windowStart++;
         renderTargetRow();
-        if (windowStart + windowSize - 1 >= order.length) {
-          // Game finished
+        // Correct finish condition: all items clicked
+        if (windowStart >= order.length) {
           stopGame();
           setTimeout(() => alert(`Congratulations! Time: ${timerEl.textContent}`), 100);
         }
@@ -142,12 +167,13 @@
 
     playBtn.onclick = startGame;
     stopBtn.onclick = stopGame;
-    gridSizeSelect.onchange = () => {
+    gridSizeSelect.onchange = categorySelect.onchange = () => {
       gridSize = parseInt(gridSizeSelect.value);
-      const total = gridSize * gridSize;
-      gridIcons = shuffle(EMOJIS.slice()).slice(0, total);
-      order = shuffle(gridIcons.slice());
       windowSize = gridSize;
+      const total = gridSize * gridSize;
+      currentEmojis = categorySelect.value === 'animal' ? ANIMAL_EMOJIS : FOOD_EMOJIS;
+      gridIcons = shuffle(currentEmojis.slice()).slice(0, total);
+      order = [];
       windowStart = 0;
       renderGrid();
       renderTargetRow();
@@ -155,10 +181,11 @@
     // Initial render
     (function initialPopulate() {
       gridSize = parseInt(gridSizeSelect.value);
-      const total = gridSize * gridSize;
-      gridIcons = shuffle(EMOJIS.slice()).slice(0, total);
-      order = shuffle(gridIcons.slice());
       windowSize = gridSize;
+      const total = gridSize * gridSize;
+      currentEmojis = FOOD_EMOJIS;
+      gridIcons = shuffle(currentEmojis.slice()).slice(0, total);
+      order = [];
       windowStart = 0;
       renderGrid();
       renderTargetRow();

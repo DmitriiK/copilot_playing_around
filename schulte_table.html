@@ -34,6 +34,7 @@
     <div class="bordered-box" style="margin-bottom: 0;">
       <div style="font-weight:bold; margin-bottom:6px;">Ordered items</div>
       <div class="target-row" id="target-row"></div>
+      <div class="next-item-name" id="next-item-name"></div>
     </div>
     <div class="bordered-box" style="margin-top: 10px;">
       <div class="grid" id="game-grid"></div>
@@ -46,6 +47,98 @@
     const ANIMAL_EMOJIS = [
       '🐶','🐱','🐭','🐹','🐰','🦊','🐻','🐼','🐨','🐯','🦁','🐮','🐷','🐸','🐵','🐔','🐧','🐦','🐤','🦆','🦅','🦉','🦇','🐺','🐗','🐴','🦄','🐝','🐛','🦋','🐌','🐞','🐜','🪲','🪳','🦟','🦗','🕷','🦂','🐢','🐍','🦎','🦖','🦕','🐙','🦑','🦐','🦞','🦀','🐡','🐠','🐟','🐬','🐳','🐋','🦈','🐊','🐅','🐆','🦓','🦍','🦧','🐘','🦣','🦛','🦏','🐪','🐫','🦒','🦘','🦬','🐃','🐂','🐄','🐎','🐖','🐏','🐑','🦙','🐐','🦌','🐕','🐩','🦮','🐕‍🦺','🐈','🐈‍⬛','🪶','🐓','🦃','🦤','🦚','🦜','🦢','🦩','🕊','🐇','🦝','🦨','🦡','🦫','🦦','🦥','🐁','🐀','🐿','🦔'
     ];
+
+    // Mapping emoji to their English names
+    const FOOD_EMOJI_NAMES = {
+      '🍎': 'Apple', '🍌': 'Banana', '🍇': 'Grapes', '🍉': 'Watermelon', '🍓': 'Strawberry',
+      '🍒': 'Cherries', '🍑': 'Peach', '🍍': 'Pineapple', '🥝': 'Kiwi', '🍅': 'Tomato',
+      '🍆': 'Eggplant', '🥑': 'Avocado', '🥕': 'Carrot', '🌽': 'Corn', '🥦': 'Broccoli',
+      '🥔': 'Potato', '🍋': 'Lemon', '🍊': 'Orange', '🍐': 'Pear', '🍏': 'Green apple',
+      '🥭': 'Mango', '🍈': 'Melon', '🍤': 'Fried shrimp', '🍠': 'Sweet potato', '🥬': 'Leafy green',
+      '🫛': 'Pea pod', '🫑': 'Bell pepper', '🧄': 'Garlic', '🧅': 'Onion', '🥒': 'Cucumber',
+      '🍄': 'Mushroom', '🥜': 'Peanuts', '🌰': 'Chestnut', '🍞': 'Bread', '🥨': 'Pretzel',
+      '🧀': 'Cheese', '🥚': 'Egg', '🥓': 'Bacon', '🥩': 'Steak', '🍗': 'Chicken leg',
+      '🍖': 'Meat on bone', '🌭': 'Hot dog', '🍔': 'Hamburger', '🍟': 'French fries', '🍕': 'Pizza',
+      '🥪': 'Sandwich', '🥙': 'Stuffed flatbread', '🌮': 'Taco', '🌯': 'Burrito', '🥗': 'Salad',
+      '🍲': 'Soup', '🍛': 'Curry', '🍜': 'Noodles', '🍝': 'Spaghetti', '🍣': 'Sushi',
+      '🍱': 'Bento box', '🥟': 'Dumpling', '🍚': 'Rice', '🍘': 'Rice cracker',
+      '🍥': 'Fish cake', '🥠': 'Fortune cookie', '🍢': 'Skewer', '🍡': 'Dango', '🍧': 'Shaved ice',
+      '🍨': 'Ice cream', '🍦': 'Soft ice cream', '🥧': 'Pie', '🍰': 'Cake slice', '🎂': 'Birthday cake',
+      '🧁': 'Cupcake', '🍮': 'Custard', '🍭': 'Lollipop', '🍬': 'Candy', '🍫': 'Chocolate',
+      '🍿': 'Popcorn', '🍩': 'Doughnut', '🍪': 'Cookie'
+    };
+
+    // Mapping emoji to their Turkish names
+    const FOOD_EMOJI_NAMES_TR = {
+      '🍎': 'Elma', '🍌': 'Muz', '🍇': 'Üzüm', '🍉': 'Karpuz', '🍓': 'Çilek',
+      '🍒': 'Kiraz', '🍑': 'Şeftali', '🍍': 'Ananas', '🥝': 'Kivi', '🍅': 'Domates',
+      '🍆': 'Patlıcan', '🥑': 'Avokado', '🥕': 'Havuç', '🌽': 'Mısır', '🥦': 'Brokoli',
+      '🥔': 'Patates', '🍋': 'Limon', '🍊': 'Portakal', '🍐': 'Armut', '🍏': 'Yeşil elma',
+      '🥭': 'Mango', '🍈': 'Kavun', '🍤': 'Kızarmış karides', '🍠': 'Tatlı patates', '🥬': 'Yeşillik',
+      '🫛': 'Bezelye', '🫑': 'Biber', '🧄': 'Sarımsak', '🧅': 'Soğan', '🥒': 'Salatalık',
+      '🍄': 'Mantar', '🥜': 'Fıstık', '🌰': 'Kestane', '🍞': 'Ekmek', '🥨': 'Pretzel',
+      '🧀': 'Peynir', '🥚': 'Yumurta', '🥓': 'Pastırma', '🥩': 'Biftek', '🍗': 'Tavuk butu',
+      '🍖': 'Et', '🌭': 'Sosisli', '🍔': 'Hamburger', '🍟': 'Patates kızartması', '🍕': 'Pizza',
+      '🥪': 'Sandviç', '🥙': 'Dürüm', '🌮': 'Tako', '🌯': 'Burrito', '🥗': 'Salata',
+      '🍲': 'Çorba', '🍛': 'Köri', '🍜': 'Erişte', '🍝': 'Spagetti', '🍣': 'Suşi',
+      '🍱': 'Bento kutusu', '🥟': 'Mantı', '🍚': 'Pirinç', '🍘': 'Pirinç krakeri',
+      '🍥': 'Balık keki', '🥠': 'Fal kurabiyesi', '🍢': 'Şiş', '🍡': 'Dango', '🍧': 'Buzlu tatlı',
+      '🍨': 'Dondurma', '🍦': 'Yumuşak dondurma', '🥧': 'Turta', '🍰': 'Pasta dilimi', '🎂': 'Doğumgünü pastası',
+      '🧁': 'Kek', '🍮': 'Muhallebi', '🍭': 'Lolipop', '🍬': 'Şeker', '🍫': 'Çikolata',
+      '🍿': 'Patlamış mısır', '🍩': 'Donut', '🍪': 'Kurabiye'
+    };
+    
+    const ANIMAL_EMOJI_NAMES = {
+      '🐶': 'Dog', '🐱': 'Cat', '🐭': 'Mouse', '🐹': 'Hamster', '🐰': 'Rabbit',
+      '🦊': 'Fox', '🐻': 'Bear', '🐼': 'Panda', '🐨': 'Koala', '🐯': 'Tiger',
+      '🦁': 'Lion', '🐮': 'Cow', '🐷': 'Pig', '🐸': 'Frog', '🐵': 'Monkey',
+      '🐔': 'Chicken', '🐧': 'Penguin', '🐦': 'Bird', '🐤': 'Chick', '🦆': 'Duck',
+      '🦅': 'Eagle', '🦉': 'Owl', '🦇': 'Bat', '🐺': 'Wolf', '🐗': 'Boar',
+      '🐴': 'Horse', '🦄': 'Unicorn', '🐝': 'Bee', '🐛': 'Caterpillar', '🦋': 'Butterfly',
+      '🐌': 'Snail', '🐞': 'Ladybug', '🐜': 'Ant', '🪲': 'Beetle', '🪳': 'Cockroach',
+      '🦟': 'Mosquito', '🦗': 'Cricket', '🕷': 'Spider', '🦂': 'Scorpion', '🐢': 'Turtle',
+      '🐍': 'Snake', '🦎': 'Lizard', '🦖': 'T-Rex', '🦕': 'Sauropod', '🐙': 'Octopus',
+      '🦑': 'Squid', '🦐': 'Shrimp', '🦞': 'Lobster', '🦀': 'Crab', '🐡': 'Blowfish',
+      '🐠': 'Tropical fish', '🐟': 'Fish', '🐬': 'Dolphin', '🐳': 'Whale', '🐋': 'Whale',
+      '🦈': 'Shark', '🐊': 'Crocodile', '🐅': 'Tiger', '🐆': 'Leopard', '🦓': 'Zebra',
+      '🦍': 'Gorilla', '🦧': 'Orangutan', '🐘': 'Elephant', '🦣': 'Mammoth', '🦛': 'Hippo',
+      '🦏': 'Rhino', '🐪': 'Camel', '🐫': 'Two-hump camel', '🦒': 'Giraffe', '🦘': 'Kangaroo',
+      '🦬': 'Bison', '🐃': 'Water buffalo', '🐂': 'Ox', '🐄': 'Cow', '🐎': 'Horse',
+      '🐖': 'Pig', '🐏': 'Ram', '🐑': 'Sheep', '🦙': 'Llama', '🐐': 'Goat',
+      '🦌': 'Deer', '🐕': 'Dog', '🐩': 'Poodle', '🦮': 'Guide dog', '🐕‍🦺': 'Service dog',
+      '🐈': 'Cat', '🐈‍⬛': 'Black cat', '🪶': 'Feather', '🐓': 'Rooster', '🦃': 'Turkey',
+      '🦤': 'Dodo', '🦚': 'Peacock', '🦜': 'Parrot', '🦢': 'Swan', '🦩': 'Flamingo',
+      '🕊': 'Dove', '🐇': 'Rabbit', '🦝': 'Raccoon', '🦨': 'Skunk', '🦡': 'Badger',
+      '🦫': 'Beaver', '🦦': 'Otter', '🦥': 'Sloth', '🐁': 'Mouse', '🐀': 'Rat',
+      '🐿': 'Chipmunk', '🦔': 'Hedgehog'
+    };
+    
+    // Mapping emoji to their Turkish names
+    const ANIMAL_EMOJI_NAMES_TR = {
+      '🐶': 'Köpek', '🐱': 'Kedi', '🐭': 'Fare', '🐹': 'Hamster', '🐰': 'Tavşan',
+      '🦊': 'Tilki', '🐻': 'Ayı', '🐼': 'Panda', '🐨': 'Koala', '🐯': 'Kaplan',
+      '🦁': 'Aslan', '🐮': 'İnek', '🐷': 'Domuz', '🐸': 'Kurbağa', '🐵': 'Maymun',
+      '🐔': 'Tavuk', '🐧': 'Penguen', '🐦': 'Kuş', '🐤': 'Civciv', '🦆': 'Ördek',
+      '🦅': 'Kartal', '🦉': 'Baykuş', '🦇': 'Yarasa', '🐺': 'Kurt', '🐗': 'Yaban domuzu',
+      '🐴': 'At', '🦄': 'Tek boynuzlu at', '🐝': 'Arı', '🐛': 'Tırtıl', '🦋': 'Kelebek',
+      '🐌': 'Salyangoz', '🐞': 'Uğur böceği', '🐜': 'Karınca', '🪲': 'Böcek', '🪳': 'Hamam böceği',
+      '🦟': 'Sivrisinek', '🦗': 'Cırcır böceği', '🕷': 'Örümcek', '🦂': 'Akrep', '🐢': 'Kaplumbağa',
+      '🐍': 'Yılan', '🦎': 'Kertenkele', '🦖': 'T-Rex', '🦕': 'Sauropod', '🐙': 'Ahtapot',
+      '🦑': 'Kalamar', '🦐': 'Karides', '🦞': 'Istakoz', '🦀': 'Yengeç', '🐡': 'Balon balığı',
+      '🐠': 'Tropik balık', '🐟': 'Balık', '🐬': 'Yunus', '🐳': 'Balina', '🐋': 'Balina',
+      '🦈': 'Köpekbalığı', '🐊': 'Timsah', '🐅': 'Kaplan', '🐆': 'Leopar', '🦓': 'Zebra',
+      '🦍': 'Goril', '🦧': 'Orangutan', '🐘': 'Fil', '🦣': 'Mamut', '🦛': 'Su aygırı',
+      '🦏': 'Gergedan', '🐪': 'Deve', '🐫': 'Çift hörgüçlü deve', '🦒': 'Zürafa', '🦘': 'Kanguru',
+      '🦬': 'Bizon', '🐃': 'Su mandası', '🐂': 'Öküz', '🐄': 'İnek', '🐎': 'At',
+      '🐖': 'Domuz', '🐏': 'Koç', '🐑': 'Koyun', '🦙': 'Lama', '🐐': 'Keçi',
+      '🦌': 'Geyik', '🐕': 'Köpek', '🐩': 'Kaniş', '🦮': 'Rehber köpek', '🐕‍🦺': 'Servis köpeği',
+      '🐈': 'Kedi', '🐈‍⬛': 'Siyah kedi', '🪶': 'Tüy', '🐓': 'Horoz', '🦃': 'Hindi',
+      '🦤': 'Dodo', '🦚': 'Tavus kuşu', '🦜': 'Papağan', '🦢': 'Kuğu', '🦩': 'Flamingo',
+      '🕊': 'Güvercin', '🐇': 'Tavşan', '🦝': 'Rakun', '🦨': 'Kokarca', '🦡': 'Porsuk',
+      '🦫': 'Kunduz', '🦦': 'Su samuru', '🦥': 'Tembel hayvan', '🐁': 'Fare', '🐀': 'Sıçan',
+      '🐿': 'Sincap', '🦔': 'Kirpi'
+    };
+    
     let gridSize = 4;
     let order = [];
     let gridIcons = [];
@@ -63,6 +156,7 @@
     const timerEl = document.getElementById('timer');
     const targetRow = document.getElementById('target-row');
     const gameGrid = document.getElementById('game-grid');
+    const nextItemName = document.getElementById('next-item-name');
 
     function shuffle(arr) {
       for (let i = arr.length - 1; i > 0; i--) {
@@ -89,6 +183,7 @@
       categorySelect.disabled = true;
       renderTargetRow();
       renderGrid();
+      updateNextItemName();
       timerInterval = setInterval(() => {
         timer++;
         updateTimer();
@@ -101,6 +196,7 @@
       stopBtn.disabled = true;
       gridSizeSelect.disabled = false;
       categorySelect.disabled = false;
+      nextItemName.textContent = '';
       clearInterval(timerInterval);
     }
 
@@ -108,6 +204,23 @@
       const min = String(Math.floor(timer / 60)).padStart(2, '0');
       const sec = String(timer % 60).padStart(2, '0');
       timerEl.textContent = `${min}:${sec}`;
+    }
+
+    function updateNextItemName() {
+      if (!playing || windowStart >= order.length) {
+        nextItemName.textContent = '';
+        return;
+      }
+      
+      const currentEmoji = order[windowStart];
+      const isAnimal = categorySelect.value === 'animal';
+      const englishDict = isAnimal ? ANIMAL_EMOJI_NAMES : FOOD_EMOJI_NAMES;
+      const turkishDict = isAnimal ? ANIMAL_EMOJI_NAMES_TR : FOOD_EMOJI_NAMES_TR;
+      
+      const englishName = englishDict[currentEmoji] || 'Unknown';
+      const turkishName = turkishDict[currentEmoji] || 'Bilinmiyor';
+      
+      nextItemName.textContent = `${englishName} - ${turkishName}`;
     }
 
     function renderTargetRow() {
@@ -132,6 +245,7 @@
           targetRow.appendChild(btn);
         }
       }
+      updateNextItemName();
     }
 
     function renderGrid() {
@@ -154,6 +268,7 @@
         btn.style.background = '#d0ffd0';
         windowStart++;
         renderTargetRow();
+        updateNextItemName();
         // Correct finish condition: all items clicked
         if (windowStart >= order.length) {
           stopGame();

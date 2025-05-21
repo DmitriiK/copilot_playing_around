@@ -8,3 +8,4 @@ body { font-family: sans-serif; background: #f8f8f8; text-align: center; }
 .target-row { display: flex; justify-content: center; gap: 10px; margin-bottom: 20px; }
 .target-btn { font-size: 2rem; width: 60px; height: 60px; border: 2px solid #888; border-radius: 10px; background: #ffe; cursor: default; }
 .timer { font-size: 1.2rem; margin: 10px; }
+.next-item-name { font-size: 1rem; margin-top: 10px; color: #666; font-style: italic; }

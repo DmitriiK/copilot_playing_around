@@ -20,6 +20,7 @@ The game field should have, besides the main grid and ordered items:
 - A timer.
 - A control to specify the category: animal or food.
 - A control for specifying the size of the main grid (from 4 to 6, 4 is default). Once the user changes the grid size in the option control, both grids should be rebuilt.
+- Under the "ordered items" row, display the name of the current item to be found in both English and Turkish (e.g., "Apple - Elma" or "Dog - Köpek"). This bilingual label should update each time a new item needs to be found.
 
 # Non-functional requirement
 - Use a separate .css file
